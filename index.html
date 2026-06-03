@@ -870,12 +870,14 @@ function renderRoster(){
     const ig = c.ig||t.ig; const ttf = c.tt_f||t.tt_f; const niche = c.niche||t.niche; const city = c.city||t.city; const email = c.email||t.email;
     const rates = c.rates||t.rates;
     return `<div class="talent-card">
-      <div class="tc-header" style="background:linear-gradient(135deg,${t.color}33,${t.color}11);display:flex;justify-content:space-between;align-items:flex-end">
+      <div class="tc-header" style="background:linear-gradient(135deg,${t.color}33,${t.color}11)">
         <div style="font-size:10px;color:${t.color};font-weight:600;letter-spacing:.5px">${niche}</div>
-        <button class="btn btn-secondary btn-sm" onclick="openTalentModal('${t.id}')" style="font-size:11px;padding:3px 8px">✎ Bearbeiten</button>
       </div>
       <div class="tc-body">
-        <div class="tc-name">${t.name}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <div class="tc-name" style="margin:0">${t.name}</div>
+          <button class="btn btn-secondary btn-sm" onclick="openTalentModal('${t.id}')" style="font-size:11px;padding:4px 10px;margin-left:8px">✎ Edit</button>
+        </div>
         <div class="tc-handle">${t.handle}${t.tt?` · ${t.tt}`:''}</div>
         <div class="tc-stats">
           <div class="tc-stat"><div class="val">${fmtNum(ig)}</div><div class="lbl">IG</div></div>
