@@ -437,6 +437,33 @@ label{display:block;font-size:12px;color:#888;margin-bottom:5px}
   </div>
 </div>
 
+<!-- TALENT MODAL -->
+<div class="modal-overlay" id="talent-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('talent-modal').classList.remove('open')">✕</button>
+    <h2 id="talent-modal-title">Talent bearbeiten</h2>
+    <input type="hidden" id="tm-id">
+    <input type="hidden" id="tm-rate-count">
+    <div class="form-grid g2">
+      <div class="form-row"><label>IG Follower</label><input id="tm-ig" type="number" placeholder="61000"></div>
+      <div class="form-row"><label>TikTok Follower</label><input id="tm-ttf" type="number" placeholder="82000"></div>
+    </div>
+    <div class="form-grid g2">
+      <div class="form-row"><label>Nische</label><input id="tm-niche" placeholder="Lifestyle / Fashion"></div>
+      <div class="form-row"><label>Stadt</label><input id="tm-city" placeholder="Berlin"></div>
+    </div>
+    <div class="form-row"><label>E-Mail</label><input id="tm-email" placeholder="talent@onemgmnt.com"></div>
+    <div class="form-row">
+      <label style="margin-bottom:8px">Rate Card <span style="color:#555;font-size:11px">(Bezeichnung · Preis · Minimum)</span></label>
+      <div id="tm-rates"></div>
+    </div>
+    <div class="flex">
+      <button class="btn btn-primary" onclick="saveTalentModal()">Speichern</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('talent-modal').classList.remove('open')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- BRAND MODAL -->
 <div class="modal-overlay" id="brand-modal">
   <div class="modal">
@@ -837,30 +864,84 @@ function deleteDeal(){
 // ROSTER
 // ============================================================
 function renderRoster(){
-  document.getElementById('roster-grid').innerHTML = TALENTS.map(t=>`
-    <div class="talent-card">
-      <div class="tc-header" style="background:linear-gradient(135deg,${t.color}33,${t.color}11)">
-        <div style="font-size:10px;color:${t.color};font-weight:600;letter-spacing:.5px">${t.niche}</div>
+  const custom = JSON.parse(localStorage.getItem('onemgmnt_talents')||'{}');
+  document.getElementById('roster-grid').innerHTML = TALENTS.map(t=>{
+    const c = custom[t.id]||{};
+    const ig = c.ig||t.ig; const ttf = c.tt_f||t.tt_f; const niche = c.niche||t.niche; const city = c.city||t.city; const email = c.email||t.email;
+    const rates = c.rates||t.rates;
+    return `<div class="talent-card">
+      <div class="tc-header" style="background:linear-gradient(135deg,${t.color}33,${t.color}11);display:flex;justify-content:space-between;align-items:flex-end">
+        <div style="font-size:10px;color:${t.color};font-weight:600;letter-spacing:.5px">${niche}</div>
+        <button class="btn btn-secondary btn-sm" onclick="openTalentModal('${t.id}')" style="font-size:11px;padding:3px 8px">✎ Bearbeiten</button>
       </div>
       <div class="tc-body">
         <div class="tc-name">${t.name}</div>
         <div class="tc-handle">${t.handle}${t.tt?` · ${t.tt}`:''}</div>
         <div class="tc-stats">
-          <div class="tc-stat"><div class="val">${fmtNum(t.ig)}</div><div class="lbl">IG</div></div>
-          ${t.tt_f?`<div class="tc-stat"><div class="val">${fmtNum(t.tt_f)}</div><div class="lbl">TikTok</div></div>`:''}
-          ${t.city?`<div class="tc-stat"><div class="val">${t.city}</div><div class="lbl">Stadt</div></div>`:''}
+          <div class="tc-stat"><div class="val">${fmtNum(ig)}</div><div class="lbl">IG</div></div>
+          ${ttf?`<div class="tc-stat"><div class="val">${fmtNum(ttf)}</div><div class="lbl">TikTok</div></div>`:''}
+          ${city?`<div class="tc-stat"><div class="val">${city}</div><div class="lbl">Stadt</div></div>`:''}
         </div>
-        <div style="font-size:11px;color:#818cf8;margin-bottom:8px">✉ <a href="mailto:${t.email}" style="color:#818cf8">${t.email}</a></div>
+        <div style="font-size:11px;color:#818cf8;margin-bottom:8px">✉ <a href="mailto:${email}" style="color:#818cf8">${email}</a></div>
         <div class="tc-rates">
           <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Rate Card</div>
-          ${t.rates.map(r=>`<div class="tc-rate-row">
+          ${rates.map(r=>`<div class="tc-rate-row">
             <span class="rname">${r.n}</span>
             <span>${typeof r.price==='number'?`<span class="rprice">€${r.price.toLocaleString('de')}</span>${r.floor?`<span class="rfloor"> (min €${r.floor.toLocaleString('de')})</span>`:''}`:
             `<span class="rprice">${r.price}</span>`}</span>
           </div>`).join('')}
         </div>
       </div>
+    </div>`;
+  }).join('');
+}
+
+function openTalentModal(id){
+  const t = TALENTS.find(x=>x.id===id);
+  const custom = JSON.parse(localStorage.getItem('onemgmnt_talents')||'{}');
+  const c = custom[id]||{};
+  const rates = c.rates||t.rates;
+  document.getElementById('talent-modal-title').textContent = t.name + ' bearbeiten';
+  document.getElementById('tm-id').value = id;
+  document.getElementById('tm-ig').value = c.ig||t.ig||'';
+  document.getElementById('tm-ttf').value = c.tt_f||t.tt_f||'';
+  document.getElementById('tm-niche').value = c.niche||t.niche||'';
+  document.getElementById('tm-city').value = c.city||t.city||'';
+  document.getElementById('tm-email').value = c.email||t.email||'';
+  // Render rates
+  document.getElementById('tm-rates').innerHTML = rates.map((r,i)=>`
+    <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+      <input value="${r.n}" placeholder="Bezeichnung" style="flex:2;font-size:12px" id="tr-name-${i}">
+      <input value="${typeof r.price==='number'?r.price:r.price}" placeholder="Preis" style="flex:1;font-size:12px" id="tr-price-${i}">
+      <input value="${r.floor||''}" placeholder="Min" style="flex:1;font-size:12px" id="tr-floor-${i}">
     </div>`).join('');
+  document.getElementById('tm-rate-count').value = rates.length;
+  document.getElementById('talent-modal').classList.add('open');
+}
+
+function saveTalentModal(){
+  const id = document.getElementById('tm-id').value;
+  const t = TALENTS.find(x=>x.id===id);
+  const count = parseInt(document.getElementById('tm-rate-count').value)||t.rates.length;
+  const rates = [];
+  for(let i=0;i<count;i++){
+    const n = document.getElementById('tr-name-'+i)?.value||'';
+    const p = document.getElementById('tr-price-'+i)?.value||'';
+    const f = document.getElementById('tr-floor-'+i)?.value||'';
+    if(n) rates.push({n, price: isNaN(p)||p===''?p:parseInt(p), floor: f?parseInt(f):null});
+  }
+  const custom = JSON.parse(localStorage.getItem('onemgmnt_talents')||'{}');
+  custom[id] = {
+    ig: parseInt(document.getElementById('tm-ig').value)||null,
+    tt_f: parseInt(document.getElementById('tm-ttf').value)||null,
+    niche: document.getElementById('tm-niche').value,
+    city: document.getElementById('tm-city').value,
+    email: document.getElementById('tm-email').value,
+    rates: rates.length ? rates : (custom[id]?.rates||t.rates)
+  };
+  localStorage.setItem('onemgmnt_talents', JSON.stringify(custom));
+  document.getElementById('talent-modal').classList.remove('open');
+  renderRoster();
 }
 
 function fmtNum(n){if(!n)return'–';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(0)+'k';return n;}
