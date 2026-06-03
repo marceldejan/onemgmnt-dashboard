@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONEMGMNT HQ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d0d0f;color:#e8e8ec;min-height:100vh}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#1a1a1f}
+::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+#nav{background:#111115;border-bottom:1px solid #222;padding:0 20px;display:flex;align-items:center;gap:4px;position:sticky;top:0;z-index:100}
+#nav .logo{font-weight:700;font-size:13px;letter-spacing:2px;color:#fff;padding:16px 16px 16px 4px;border-right:1px solid #222;margin-right:8px}
+.tab-btn{padding:16px 14px;font-size:13px;color:#888;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{color:#ccc}
+.tab-btn.active{color:#fff;border-bottom-color:#6c63ff}
+#save-status{margin-left:auto;font-size:11px;color:#555;padding:4px 8px}
+
+/* VIEWS */
+.view{display:none;padding:24px;max-width:1400px;margin:0 auto}
+.view.active{display:block}
+
+/* CARDS */
+.card{background:#16161c;border:1px solid #222;border-radius:10px;padding:20px}
+.card-sm{background:#1a1a22;border:1px solid #222;border-radius:8px;padding:14px}
+h2{font-size:16px;font-weight:600;margin-bottom:16px;color:#fff}
+h3{font-size:13px;font-weight:600;margin-bottom:10px;color:#ccc}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* METRICS */
+.metric{background:#16161c;border:1px solid #222;border-radius:10px;padding:16px}
+.metric .val{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px}
+.metric .lbl{font-size:12px;color:#666}
+.metric .sub{font-size:11px;color:#555;margin-top:4px}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-paid{background:#1a3a2a;color:#4ade80}
+.badge-pending{background:#2a2010;color:#f59e0b}
+.badge-late{background:#3a1515;color:#f87171}
+.badge-info{background:#1a1f3a;color:#818cf8}
+.badge-gray{background:#1f1f27;color:#888}
+.badge-purple{background:#1e1a3a;color:#a78bfa}
+
+/* ALERTS */
+.alert{border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.alert-warn{background:#2a1f0a;border:1px solid #5a3a0a;color:#f59e0b}
+.alert-red{background:#2a0f0f;border:1px solid #5a1515;color:#f87171}
+.alert-green{background:#0f2a1a;border:1px solid #155a2a;color:#4ade80}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:#6c63ff;color:#fff}
+.btn-primary:hover{background:#7c73ff}
+.btn-secondary{background:#1f1f2a;color:#ccc;border:1px solid #333}
+.btn-secondary:hover{background:#252530;color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-green{background:#1a3a2a;color:#4ade80;border:1px solid #2a5a3a}
+.btn-red{background:#3a1515;color:#f87171;border:1px solid #5a2020}
+.btn-orange{background:#2a1f0a;color:#f59e0b;border:1px solid #5a3a0a}
+
+/* INPUTS */
+input,select,textarea{background:#1a1a22;border:1px solid #2a2a35;border-radius:7px;color:#e8e8ec;padding:9px 12px;font-size:13px;width:100%;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#6c63ff}
+textarea{resize:vertical;min-height:80px}
+label{display:block;font-size:12px;color:#888;margin-bottom:5px}
+.form-row{margin-bottom:14px}
+.form-grid{display:grid;gap:12px}
+.form-grid.g2{grid-template-columns:1fr 1fr}
+.form-grid.g3{grid-template-columns:1fr 1fr 1fr}
+
+/* KANBAN */
+#kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.k-col{background:#111115;border:1px solid #1e1e26;border-radius:10px;min-width:200px;flex:1}
+.k-head{padding:12px 14px;border-bottom:1px solid #1e1e26;display:flex;align-items:center;justify-content:space-between}
+.k-head .k-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.k-head .k-count{background:#1f1f27;color:#666;padding:2px 7px;border-radius:20px;font-size:11px}
+.k-body{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:100px}
+.deal-card{background:#16161c;border:1px solid #252530;border-radius:8px;padding:12px;cursor:pointer;transition:border-color .15s}
+.deal-card:hover{border-color:#6c63ff}
+.deal-card.stale{border-color:#f59e0b44}
+.deal-card .dc-brand{font-weight:600;font-size:13px;margin-bottom:4px}
+.deal-card .dc-talent{font-size:11px;color:#888;margin-bottom:6px}
+.deal-card .dc-meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#666}
+.deal-card .dc-amount{color:#4ade80;font-weight:600}
+.deal-card .stale-flag{font-size:10px;color:#f59e0b;margin-top:4px}
+
+/* TALENT CARDS */
+.talent-card{background:#16161c;border:1px solid #222;border-radius:10px;overflow:hidden}
+.talent-card .tc-header{height:60px;display:flex;align-items:flex-end;padding:12px;position:relative}
+.talent-card .tc-body{padding:14px}
+.talent-card .tc-name{font-weight:700;font-size:15px;margin-bottom:2px}
+.talent-card .tc-handle{font-size:11px;color:#888;margin-bottom:10px}
+.talent-card .tc-stats{display:flex;gap:12px;margin-bottom:10px}
+.talent-card .tc-stat .val{font-size:14px;font-weight:600}
+.talent-card .tc-stat .lbl{font-size:10px;color:#666}
+.talent-card .tc-rates{background:#111115;border-radius:7px;padding:10px;margin-top:10px}
+.tc-rate-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a22;font-size:12px}
+.tc-rate-row:last-child{border:none}
+.tc-rate-row .rname{color:#aaa}
+.tc-rate-row .rprice{color:#4ade80;font-weight:600}
+.tc-rate-row .rfloor{color:#f59e0b;font-size:10px}
+
+/* TEMPLATE LIST */
+.tmpl-list{display:flex;flex-direction:column;gap:4px}
+.tmpl-item{padding:10px 12px;background:#1a1a22;border:1px solid #222;border-radius:7px;cursor:pointer;font-size:13px;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+.tmpl-item:hover,.tmpl-item.active{background:#1e1e2a;border-color:#6c63ff;color:#fff}
+.tmpl-text{background:#111115;border-radius:8px;padding:16px;font-size:13px;line-height:1.7;color:#ccc;white-space:pre-wrap;min-height:200px}
+
+/* BRAND CRM */
+.brand-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#16161c;border:1px solid #222;border-radius:8px;margin-bottom:8px}
+.brand-row .br-name{font-weight:600;font-size:13px;flex:1}
+.brand-row .br-cat{font-size:11px;color:#888;flex:1}
+.brand-row .br-contact{font-size:11px;color:#818cf8;flex:1}
+.brand-row .br-status{flex:0 0 auto}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:#00000088;z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#16161c;border:1px solid #2a2a35;border-radius:12px;padding:24px;width:500px;max-height:90vh;overflow-y:auto;position:relative}
+.modal h2{margin-bottom:18px}
+.modal-close{position:absolute;right:16px;top:16px;background:none;border:none;color:#888;font-size:18px;cursor:pointer}
+
+/* INTAKE */
+.intake-box{background:#111115;border:2px dashed #2a2a35;border-radius:10px;padding:20px;transition:border-color .2s}
+.intake-box:focus-within{border-color:#6c63ff}
+.intake-result{margin-top:16px}
+.ir-field{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a22;font-size:13px}
+.ir-field .ir-lbl{color:#888;min-width:130px}
+.ir-field .ir-val{color:#fff;font-weight:500}
+
+/* PAYMENT STAGES */
+.payment-track{display:flex;gap:4px;margin-top:8px}
+.pt-step{flex:1;padding:5px 8px;text-align:center;font-size:10px;border-radius:5px;background:#1a1a22;color:#555;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.pt-step.done{background:#1a3a2a;color:#4ade80;border-color:#2a5a3a}
+.pt-step.current{background:#1e1e2a;color:#818cf8;border-color:#6c63ff}
+
+/* SECTION HEADER */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+
+/* UTILS */
+.flex{display:flex;gap:8px;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.mt8{margin-top:8px}
+.mt16{margin-top:16px}
+.mt24{margin-top:24px}
+.mb8{margin-bottom:8px}
+.mb16{margin-bottom:16px}
+.text-sm{font-size:12px;color:#888}
+.text-muted{color:#666}
+.divider{border:none;border-top:1px solid #1e1e26;margin:16px 0}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:#1f1f27;color:#aaa}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <div class="logo">ONEMGMNT</div>
+  <button class="tab-btn active" onclick="showTab('overview')">Übersicht</button>
+  <button class="tab-btn" onclick="showTab('intake')">📥 Intake</button>
+  <button class="tab-btn" onclick="showTab('pipeline')">Pipeline</button>
+  <button class="tab-btn" onclick="showTab('roster')">Talents</button>
+  <button class="tab-btn" onclick="showTab('portfolio')">Portfolio</button>
+  <button class="tab-btn" onclick="showTab('brands')">Brands</button>
+  <button class="tab-btn" onclick="showTab('templates')">Templates</button>
+  <span id="save-status">● Gespeichert</span>
+</div>
+
+<!-- ===== ÜBERSICHT ===== -->
+<div id="view-overview" class="view active">
+  <div id="stale-alerts"></div>
+  <div class="grid4 mb16" id="metrics-grid"></div>
+  <div class="grid2">
+    <div class="card">
+      <h2>Diese Woche</h2>
+      <div id="this-week"></div>
+    </div>
+    <div class="card">
+      <h2>Pipeline nach Status</h2>
+      <div id="pipeline-chart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INTAKE ===== -->
+<div id="view-intake" class="view">
+  <div class="grid2" style="align-items:start">
+    <div>
+      <div class="card mb16">
+        <h2>📥 E-Mail Intake Parser</h2>
+        <p class="text-sm mb16">Anfrage-Mail reinkopieren → automatisch als Deal-Karte auslesen und Antwort-Draft erstellen</p>
+        <div class="form-row">
+          <label>E-Mail-Text einfügen</label>
+          <div class="intake-box">
+            <textarea id="intake-email" rows="8" placeholder="Hey Marcel-Dejan,&#10;ich bin Marketing Manager bei Nike Deutschland und würde gerne eine Kooperation mit David Raum besprechen. Wir planen eine Kampagne mit Budget von ca. €8.000 für 2 Instagram Reels und 3 Story-Slides. Deadline wäre der 15. Februar.&#10;&#10;Beste Grüße, Lisa Müller"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="parseIntake()">Analysieren & Deal erstellen</button>
+      </div>
+
+      <div class="card" id="intake-result-card" style="display:none">
+        <h2>Erkannter Deal</h2>
+        <div id="intake-fields"></div>
+        <hr class="divider">
+        <div class="flex-between mb8">
+          <h3>Antwort-Draft</h3>
+          <div class="flex">
+            <select id="draft-lang" onchange="updateDraft()" style="width:auto;padding:5px 8px;font-size:12px">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+            <select id="draft-type" onchange="updateDraft()" style="width:auto;padding:5px 8px;font-size:12px">
+              <option value="interest">Interesse + Details anfragen</option>
+              <option value="offer">Angebot senden</option>
+              <option value="counter">Gegenangebot</option>
+              <option value="decline">Ablehnen</option>
+            </select>
+          </div>
+        </div>
+        <div class="tmpl-text" id="draft-output" style="min-height:150px"></div>
+        <div class="flex mt8">
+          <button class="btn btn-secondary btn-sm" onclick="copyDraft()">Kopieren</button>
+          <button class="btn btn-green btn-sm" onclick="saveDealFromIntake()">Als Deal speichern</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Zuletzt geparste Deals</h2>
+      <div id="recent-intake" class="text-muted text-sm">Noch keine Deals geparst.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PIPELINE ===== -->
+<div id="view-pipeline" class="view">
+  <div class="sec-head">
+    <h2 style="margin:0">Deal Pipeline</h2>
+    <button class="btn btn-primary btn-sm" onclick="openDealModal()">+ Neuer Deal</button>
+  </div>
+  <div id="kanban"></div>
+</div>
+
+<!-- ===== ROSTER ===== -->
+<div id="view-roster" class="view">
+  <div class="sec-head">
+    <h2 style="margin:0">Talent Roster</h2>
+    <span class="text-sm">7 Talents · Gesamtreichweite ~1.4M</span>
+  </div>
+  <div id="roster-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px"></div>
+</div>
+
+<!-- ===== PORTFOLIO ===== -->
+<div id="view-portfolio" class="view">
+  <div class="grid2" style="align-items:start">
+    <div>
+      <div class="card mb16">
+        <h2>Portfolio Generator</h2>
+        <div class="form-row">
+          <label>Empfänger (Marke)</label>
+          <input id="pf-brand" placeholder="z.B. Nike Deutschland">
+        </div>
+        <div class="form-row">
+          <label>Talents auswählen</label>
+          <div id="pf-talent-selector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+        </div>
+        <div class="form-row">
+          <label>Optionaler Begleittext</label>
+          <textarea id="pf-note" rows="3" placeholder="Kurze persönliche Notiz für den Kunden..."></textarea>
+        </div>
+        <div class="flex">
+          <button class="btn btn-primary" onclick="generatePortfolio()">Vorschau generieren</button>
+          <button class="btn btn-secondary" onclick="exportPortfolioPDF()">Als PDF drucken</button>
+        </div>
+      </div>
+    </div>
+    <div id="pf-preview" class="card">
+      <p class="text-muted text-sm">Talents auswählen und "Vorschau generieren" klicken.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BRANDS ===== -->
+<div id="view-brands" class="view">
+  <div class="sec-head">
+    <h2 style="margin:0">Brand CRM</h2>
+    <button class="btn btn-primary btn-sm" onclick="openBrandModal()">+ Brand hinzufügen</button>
+  </div>
+  <div class="flex mb16">
+    <input id="brand-search" placeholder="Brand suchen..." oninput="renderBrands()" style="max-width:300px">
+    <select id="brand-filter" onchange="renderBrands()" style="width:auto">
+      <option value="">Alle Kategorien</option>
+      <option>Fashion</option>
+      <option>Sports</option>
+      <option>Beauty</option>
+      <option>Tech</option>
+      <option>Food & Beverage</option>
+      <option>Automotive</option>
+      <option>Finance</option>
+      <option>Sonstige</option>
+    </select>
+  </div>
+  <div id="brand-list"></div>
+</div>
+
+<!-- ===== TEMPLATES ===== -->
+<div id="view-templates" class="view">
+  <div class="grid2" style="align-items:start">
+    <div>
+      <div class="flex mb16">
+        <select id="tmpl-cat" onchange="renderTmplList()" style="flex:1">
+          <option value="paid">Paid</option>
+          <option value="gifting">Gifting</option>
+          <option value="barter">Barter</option>
+          <option value="event">Event</option>
+          <option value="outreach">Outreach</option>
+        </select>
+        <select id="tmpl-lang" onchange="renderTmplList()" style="width:auto">
+          <option value="de">DE</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
+      <div class="tmpl-list" id="tmpl-list"></div>
+    </div>
+    <div>
+      <div class="card-sm mb8 flex-between">
+        <div class="flex">
+          <select id="tmpl-talent" style="width:auto;font-size:12px">
+            <option value="">Talent wählen</option>
+            <option>Shani</option><option>Maria</option><option>Jannes</option>
+            <option>Marcel-Dejan</option><option>Anton Stach</option><option>David Raum</option><option>cozyvu</option>
+          </select>
+          <input id="tmpl-brand-name" placeholder="Marke..." style="width:120px;font-size:12px">
+          <input id="tmpl-contact" placeholder="Ansprechpartner..." style="width:130px;font-size:12px">
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="personalizeTemplate()">Personalisieren</button>
+      </div>
+      <div class="tmpl-text" id="tmpl-preview" style="min-height:300px">Template links wählen.</div>
+      <div class="flex mt8">
+        <button class="btn btn-secondary btn-sm" onclick="copyTemplate()">Kopieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEAL MODAL -->
+<div class="modal-overlay" id="deal-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDealModal()">✕</button>
+    <h2 id="deal-modal-title">Neuer Deal</h2>
+    <div class="form-grid g2">
+      <div class="form-row">
+        <label>Marke *</label>
+        <input id="dm-brand" placeholder="Nike Deutschland">
+      </div>
+      <div class="form-row">
+        <label>Talent *</label>
+        <select id="dm-talent">
+          <option value="">Wählen</option>
+          <option>Shani</option><option>Maria</option><option>Jannes</option>
+          <option>Marcel-Dejan</option><option>Anton Stach</option><option>David Raum</option><option>cozyvu</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid g2">
+      <div class="form-row">
+        <label>Deal-Typ</label>
+        <select id="dm-type">
+          <option>Paid</option><option>Gifting</option><option>Barter</option><option>Event</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Betrag (€ netto)</label>
+        <input id="dm-amount" type="number" placeholder="0">
+      </div>
+    </div>
+    <div class="form-grid g2">
+      <div class="form-row">
+        <label>Phase</label>
+        <select id="dm-stage">
+          <option value="inbox">Eingang</option>
+          <option value="review">Prüfung</option>
+          <option value="negotiating">Verhandlung</option>
+          <option value="won">Abgeschlossen</option>
+          <option value="invoiced">Rechnung gestellt</option>
+          <option value="paid">Bezahlt</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Deadline</label>
+        <input id="dm-deadline" type="date">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Deliverables</label>
+      <input id="dm-deliverables" placeholder="z.B. 2x IG Reel, 3x Story">
+    </div>
+    <div class="form-grid g2">
+      <div class="form-row">
+        <label>Ansprechpartner</label>
+        <input id="dm-contact" placeholder="Lisa Müller">
+      </div>
+      <div class="form-row">
+        <label>Kontakt-Email</label>
+        <input id="dm-email" placeholder="lisa@brand.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Notizen</label>
+      <textarea id="dm-notes" rows="2" placeholder="Zusätzliche Infos..."></textarea>
+    </div>
+    <!-- Deal Terms Checklist -->
+    <div class="card-sm mb16" style="background:#111115">
+      <h3 style="margin-bottom:10px;color:#f59e0b">Deal-Terms Checkliste</h3>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <label style="display:flex;align-items:center;gap:8px;color:#ccc;font-size:13px"><input type="checkbox" id="ck-usage"> Nutzungsrechte + Dauer geklärt</label>
+        <label style="display:flex;align-items:center;gap:8px;color:#ccc;font-size:13px"><input type="checkbox" id="ck-excl"> Exklusivitätsfenster definiert</label>
+        <label style="display:flex;align-items:center;gap:8px;color:#ccc;font-size:13px"><input type="checkbox" id="ck-payment"> Zahlungsziel festgelegt (Net-30/60)</label>
+        <label style="display:flex;align-items:center;gap:8px;color:#ccc;font-size:13px"><input type="checkbox" id="ck-werbung"> #Werbung/#Anzeige Pflicht bestätigt</label>
+        <label style="display:flex;align-items:center;gap:8px;color:#ccc;font-size:13px"><input type="checkbox" id="ck-brief"> Briefing erhalten</label>
+      </div>
+    </div>
+    <div class="flex">
+      <button class="btn btn-primary" onclick="saveDeal()">Speichern</button>
+      <button class="btn btn-secondary" onclick="closeDealModal()">Abbrechen</button>
+      <button class="btn btn-red btn-sm" id="delete-deal-btn" style="display:none;margin-left:auto" onclick="deleteDeal()">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND MODAL -->
+<div class="modal-overlay" id="brand-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBrandModal()">✕</button>
+    <h2>Brand hinzufügen</h2>
+    <div class="form-grid g2">
+      <div class="form-row"><label>Brand-Name *</label><input id="bm-name" placeholder="Nike Deutschland"></div>
+      <div class="form-row"><label>Kategorie</label>
+        <select id="bm-cat">
+          <option>Fashion</option><option>Sports</option><option>Beauty</option>
+          <option>Tech</option><option>Food & Beverage</option><option>Automotive</option>
+          <option>Finance</option><option>Sonstige</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid g2">
+      <div class="form-row"><label>Ansprechpartner</label><input id="bm-contact" placeholder="Lisa Müller"></div>
+      <div class="form-row"><label>E-Mail</label><input id="bm-email" placeholder="lisa@nike.com"></div>
+    </div>
+    <div class="form-row"><label>Passende Talents</label><input id="bm-talents" placeholder="David Raum, Anton Stach"></div>
+    <div class="form-row"><label>Budget-Range</label><input id="bm-budget" placeholder="€5.000 – €20.000"></div>
+    <div class="form-row"><label>Status</label>
+      <select id="bm-status">
+        <option value="prospect">Prospect</option>
+        <option value="contacted">Kontaktiert</option>
+        <option value="active">Aktiv</option>
+        <option value="done">Deal gemacht</option>
+        <option value="pass">Kein Interesse</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Notizen</label><textarea id="bm-notes" rows="2"></textarea></div>
+    <div class="flex">
+      <button class="btn btn-primary" onclick="saveBrand()">Speichern</button>
+      <button class="btn btn-secondary" onclick="closeBrandModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const TALENTS = [
+  {id:'shani', name:'Shani', handle:'@_shaniwani_', tt:'@shani.wani', ig:61000, tt_f:82000, niche:'Lifestyle / Fashion / Beauty', city:'Berlin', color:'#a855f7', email:'shaniwani@onemgmnt.com',
+   rates:[{n:'IG Reel',price:1800,floor:1400},{n:'IG Story (3 Slides)',price:900,floor:700},{n:'TikTok Video',price:1200,floor:900},{n:'Event',price:'auf Anfrage',floor:null},{n:'Usage Rights (+30 Tage)',price:'+30%',floor:null}]},
+  {id:'maria', name:'Maria Gabriela Santos', handle:'@mariagabrielasantos', tt:'@mariagabrielasantos', ig:183000, tt_f:118000, niche:'Fashion / Lifestyle / Beauty', city:'Berlin', color:'#ec4899', email:'mariagabrielasantos@onemgmnt.com',
+   rates:[{n:'IG Reel',price:2800,floor:2200},{n:'IG Story (3 Slides)',price:1200,floor:900},{n:'TikTok Video',price:1800,floor:1400},{n:'Event',price:'auf Anfrage',floor:null},{n:'Usage Rights (+30 Tage)',price:'+30%',floor:null}]},
+  {id:'jannes', name:'Jannes', handle:'@jannestwelve', tt:'@jannestwelve', ig:178000, tt_f:571000, niche:'Fashion / Lifestyle', city:'Berlin', color:'#3b82f6', email:'jannes@onemgmnt.com',
+   rates:[{n:'IG Reel',price:2500,floor:2000},{n:'IG Story (3 Slides)',price:1100,floor:850},{n:'TikTok Video',price:3500,floor:2800},{n:'Event',price:'auf Anfrage',floor:null},{n:'Usage Rights (+30 Tage)',price:'+30%',floor:null}]},
+  {id:'marcel', name:'Marcel-Dejan', handle:'@marceldejan', tt:'@marceldejancore', ig:27500, tt_f:925, niche:'Fashion / Street Interviews', city:'Berlin', color:'#f97316', email:'info@onemgmnt.com',
+   rates:[{n:'IG Reel',price:900,floor:700},{n:'IG Story (3 Slides)',price:500,floor:400},{n:'TikTok Video',price:600,floor:500},{n:'Event',price:'auf Anfrage',floor:null},{n:'Usage Rights (+30 Tage)',price:'+20%',floor:null}]},
+  {id:'anton', name:'Anton Stach', handle:'@anton_stach', tt:null, ig:159000, tt_f:null, niche:'Profifußball · Leeds United · DFB', city:null, color:'#10b981', email:'info@onemgmnt.com',
+   rates:[{n:'IG Post (Static)',price:4500,floor:3500},{n:'IG Story (3 Slides)',price:2000,floor:1600},{n:'IG Reel',price:5500,floor:4500},{n:'Event / Appearance',price:'auf Anfrage',floor:null},{n:'Exklusivität (Kategorie)',price:'+50%',floor:null}]},
+  {id:'david', name:'David Raum', handle:'@david.raum', tt:null, ig:235000, tt_f:null, niche:'Profifußball · RB Leipzig Kap. · DFB · Nike', city:null, color:'#f59e0b', email:'info@onemgmnt.com',
+   rates:[{n:'IG Post (Static)',price:6000,floor:4800},{n:'IG Story (3 Slides)',price:2500,floor:2000},{n:'IG Reel',price:7500,floor:6000},{n:'Event / Appearance',price:'auf Anfrage',floor:null},{n:'Exklusivität (Kategorie)',price:'+50%',floor:null}]},
+  {id:'cozyvu', name:'cozyvu', handle:'@cozyvu', tt:null, ig:249000, tt_f:null, niche:'Visual / Fashion Magazine', city:'Berlin', color:'#64748b', email:'info@onemgmnt.com',
+   rates:[{n:'Feature Post',price:1500,floor:1200},{n:'Story Feature',price:800,floor:600},{n:'Reel Feature',price:2000,floor:1600},{n:'Newsletter Mention',price:500,floor:400},{n:'Content Collab',price:'auf Anfrage',floor:null}]},
+];
+
+const STAGES = [
+  {id:'inbox', label:'Eingang', color:'#888'},
+  {id:'review', label:'Prüfung', color:'#818cf8'},
+  {id:'negotiating', label:'Verhandlung', color:'#f59e0b'},
+  {id:'won', label:'Abgeschlossen', color:'#4ade80'},
+  {id:'invoiced', label:'Rechnung gestellt', color:'#60a5fa'},
+  {id:'paid', label:'Bezahlt', color:'#34d399'},
+];
+
+let deals = [];
+let brands = [];
+let editingDealId = null;
+let editingBrandId = null;
+let currentTmpl = null;
+let parsedDeal = null;
+let selectedPFTalents = new Set(['shani','maria','jannes','marcel','anton','david','cozyvu']);
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function save(){
+  localStorage.setItem('onemgmnt_deals', JSON.stringify(deals));
+  localStorage.setItem('onemgmnt_brands', JSON.stringify(brands));
+  document.getElementById('save-status').textContent = '● Gespeichert';
+}
+function load(){
+  try{ deals = JSON.parse(localStorage.getItem('onemgmnt_deals'))||[]; }catch(e){deals=[];}
+  try{ brands = JSON.parse(localStorage.getItem('onemgmnt_brands'))||SAMPLE_BRANDS; }catch(e){brands=SAMPLE_BRANDS;}
+  if(!deals.length) deals = SAMPLE_DEALS;
+}
+
+const SAMPLE_DEALS = [
+  {id:'d1', brand:'Zalando', talent:'Jannes', type:'Paid', amount:3500, stage:'negotiating', deadline:'2025-08-15', deliverables:'2x IG Reel, 3x Story', contact:'Max Müller', email:'max@zalando.de', notes:'', terms:{usage:true,excl:false,payment:true,werbung:true,brief:false}, created: Date.now()-4*86400000, updated: Date.now()-4*86400000},
+  {id:'d2', brand:'Adidas', talent:'David Raum', type:'Paid', amount:12000, stage:'inbox', deadline:'2025-09-01', deliverables:'3x IG Post, Event', contact:'Sara Schmidt', email:'sara@adidas.de', notes:'', terms:{usage:false,excl:false,payment:false,werbung:false,brief:false}, created: Date.now()-1*86400000, updated: Date.now()-1*86400000},
+  {id:'d3', brand:'Revolve', talent:'Maria', type:'Gifting', amount:0, stage:'review', deadline:'', deliverables:'Gifting + optional Story', contact:'', email:'', notes:'Produkte im Wert ca. €500', terms:{usage:false,excl:false,payment:false,werbung:false,brief:false}, created: Date.now()-2*86400000, updated: Date.now()-2*86400000},
+  {id:'d4', brand:'Nike', talent:'Anton Stach', type:'Paid', amount:8000, stage:'won', deadline:'2025-07-30', deliverables:'2x IG Reel, 1x Post', contact:'Tom Weber', email:'tom@nike.de', notes:'', terms:{usage:true,excl:true,payment:true,werbung:true,brief:true}, created: Date.now()-10*86400000, updated: Date.now()-2*86400000},
+  {id:'d5', brand:'Glossier', talent:'Shani', type:'Paid', amount:2200, stage:'invoiced', deadline:'2025-07-20', deliverables:'1x Reel, 4x Story', contact:'Anna Lee', email:'anna@glossier.com', notes:'', terms:{usage:true,excl:false,payment:true,werbung:true,brief:true}, created: Date.now()-15*86400000, updated: Date.now()-7*86400000},
+];
+
+const SAMPLE_BRANDS = [
+  {id:'b1', name:'Nike Deutschland', cat:'Sports', contact:'Tom Weber', email:'tom@nike.de', talents:'David Raum, Anton Stach', budget:'€5.000–€20.000', status:'active', notes:'Nike-Partner von David bereits'},
+  {id:'b2', name:'Zalando', cat:'Fashion', contact:'Max Müller', email:'max@zalando.de', talents:'Jannes, Maria, Shani', budget:'€2.000–€8.000', status:'contacted', notes:'Style Creator Program'},
+  {id:'b3', name:'Adidas', cat:'Sports', contact:'Sara Schmidt', email:'sara@adidas.de', talents:'David Raum, Anton Stach, Jannes', budget:'€5.000–€15.000', status:'prospect', notes:''},
+  {id:'b4', name:'Glossier', cat:'Beauty', contact:'Anna Lee', email:'anna@glossier.com', talents:'Shani, Maria', budget:'€1.500–€5.000', status:'done', notes:''},
+];
+
+// ============================================================
+// TABS
+// ============================================================
+function showTab(t){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+t).classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  const map = {overview:0,intake:1,pipeline:2,roster:3,portfolio:4,brands:5,templates:6};
+  btns[map[t]].classList.add('active');
+  if(t==='overview') renderOverview();
+  if(t==='pipeline') renderKanban();
+  if(t==='roster') renderRoster();
+  if(t==='portfolio') initPFSelector();
+  if(t==='brands') renderBrands();
+  if(t==='templates') renderTmplList();
+}
+
+// ============================================================
+// OVERVIEW
+// ============================================================
+function renderOverview(){
+  const now = Date.now();
+  const stale = deals.filter(d=>['inbox','negotiating'].includes(d.stage) && (now - (d.updated||d.created)) > 3*86400000);
+  const deadlineSoon = deals.filter(d=>{
+    if(!d.deadline||['paid'].includes(d.stage)) return false;
+    const diff = new Date(d.deadline) - now;
+    return diff > 0 && diff < 48*3600000;
+  });
+
+  // Alerts
+  let alertHtml = '';
+  stale.forEach(d=>{
+    const days = Math.floor((now-(d.updated||d.created))/86400000);
+    alertHtml += `<div class="alert alert-warn">⏰ <strong>${d.brand} / ${d.talent}</strong> — ${days} Tage ohne Bewegung <button class="btn btn-sm btn-orange" style="margin-left:auto" onclick="openDealModal('${d.id}')">Öffnen</button></div>`;
+  });
+  deadlineSoon.forEach(d=>{
+    alertHtml += `<div class="alert alert-red">🔴 <strong>${d.brand} / ${d.talent}</strong> — Deadline in &lt;48h: ${d.deadline}</div>`;
+  });
+  document.getElementById('stale-alerts').innerHTML = alertHtml;
+
+  // Metrics
+  const openDeals = deals.filter(d=>!['paid'].includes(d.stage)).length;
+  const pipelineVal = deals.filter(d=>!['paid'].includes(d.stage)).reduce((a,d)=>a+(+d.amount||0),0);
+  const wonThisMonth = deals.filter(d=>['won','invoiced','paid'].includes(d.stage) && d.amount>0).reduce((a,d)=>a+(+d.amount||0),0);
+  const unpaid = deals.filter(d=>['won','invoiced'].includes(d.stage)).reduce((a,d)=>a+(+d.amount||0),0);
+  document.getElementById('metrics-grid').innerHTML = `
+    <div class="metric"><div class="val">${openDeals}</div><div class="lbl">Offene Deals</div><div class="sub">${stale.length} davon stale</div></div>
+    <div class="metric"><div class="val">€${pipelineVal.toLocaleString('de')}</div><div class="lbl">Pipeline-Wert</div><div class="sub">offen + verhandlung</div></div>
+    <div class="metric"><div class="val">€${wonThisMonth.toLocaleString('de')}</div><div class="lbl">Abgeschlossen</div><div class="sub">inkl. ausstehend</div></div>
+    <div class="metric" style="border-color:${unpaid>0?'#f59e0b44':'#222'}"><div class="val" style="color:${unpaid>0?'#f59e0b':'#fff'}">€${unpaid.toLocaleString('de')}</div><div class="lbl">Ausstehend</div><div class="sub">Rechnung gestellt / Won</div></div>
+  `;
+
+  // This week
+  const upcoming = deals.filter(d=>d.deadline).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline)).slice(0,5);
+  let weekHtml = upcoming.length ? upcoming.map(d=>`
+    <div class="flex-between" style="padding:8px 0;border-bottom:1px solid #1a1a22">
+      <div><div style="font-size:13px;font-weight:500">${d.brand} / ${d.talent}</div>
+      <div style="font-size:11px;color:#888">${d.deliverables||'–'}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:#818cf8">${d.deadline}</div>
+      <div class="badge badge-${d.stage==='paid'?'paid':d.stage==='invoiced'?'info':'gray'}">${STAGES.find(s=>s.id===d.stage)?.label||d.stage}</div></div>
+    </div>`).join('') : '<div class="text-muted text-sm">Keine Deadlines eingetragen.</div>';
+  document.getElementById('this-week').innerHTML = weekHtml;
+
+  // Pipeline chart
+  let chartHtml = STAGES.map(s=>{
+    const count = deals.filter(d=>d.stage===s.id).length;
+    const val = deals.filter(d=>d.stage===s.id).reduce((a,d)=>a+(+d.amount||0),0);
+    const w = Math.max(4, count*14);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:12px;color:#888;width:130px">${s.label}</div>
+      <div style="background:${s.color}33;border-radius:4px;height:20px;width:${w}px;min-width:4px;transition:width .3s"></div>
+      <div style="font-size:12px;color:#aaa">${count} Deal${count!==1?'s':''}</div>
+      ${val>0?`<div style="font-size:11px;color:#4ade80">€${val.toLocaleString('de')}</div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('pipeline-chart').innerHTML = chartHtml;
+}
+
+// ============================================================
+// INTAKE PARSER
+// ============================================================
+function parseIntake(){
+  const txt = document.getElementById('intake-email').value.trim();
+  if(!txt){alert('Bitte E-Mail-Text einfügen.');return;}
+
+  // Pattern matching for deal info
+  const lower = txt.toLowerCase();
+  // Brand detection
+  let brand = 'Unbekannt';
+  const brandMatch = txt.match(/(?:von|from|bei|at|–|—)\s+([A-Z][a-zA-ZäöüÄÖÜ\s&-]{2,40?}(?:GmbH|AG|Deutschland|Germany|DE)?)/);
+  if(brandMatch) brand = brandMatch[1].trim();
+
+  // Budget detection
+  let amount = 0;
+  const budgetMatch = txt.match(/(?:budget|€|EUR|eur)\s*(?:von\s*ca\.?\s*)?(\d[\d.,]+)/i);
+  if(budgetMatch) amount = parseInt(budgetMatch[1].replace(/\D/g,''));
+
+  // Deal type
+  let dtype = 'Paid';
+  if(lower.includes('gifting')||lower.includes('product seeding')) dtype='Gifting';
+  else if(lower.includes('barter')||lower.includes('tausch')) dtype='Barter';
+  else if(lower.includes('event')||lower.includes('veranstaltung')) dtype='Event';
+
+  // Deliverables
+  const delivMatches = txt.match(/(\d+x?\s*(?:Instagram|TikTok|IG|TT|Reel|Story|Post|Video|Stories)[^,;\n]*)/gi)||[];
+  const deliverables = delivMatches.join(', ') || 'Deliverables klären';
+
+  // Deadline
+  let deadline = '';
+  const dateMatch = txt.match(/(\d{1,2})\.\s*(\w+)\s*(\d{4})?/);
+  if(dateMatch) deadline = dateMatch[0];
+
+  // Contact name
+  let contact = '';
+  const greetMatch = txt.match(/(?:regards|grüße|Grüße),?\s*\n?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/);
+  if(greetMatch) contact = greetMatch[1];
+
+  // Talent guess
+  let talent = '';
+  TALENTS.forEach(t=>{
+    if(lower.includes(t.name.toLowerCase())||lower.includes(t.handle.toLowerCase())) talent=t.name;
+  });
+
+  parsedDeal = {brand, dtype, amount, deliverables, deadline, contact, talent};
+
+  // Render result
+  document.getElementById('intake-result-card').style.display='block';
+  document.getElementById('intake-fields').innerHTML = `
+    <div class="ir-field"><span class="ir-lbl">Marke</span><input value="${brand}" id="ip-brand" style="flex:1"></div>
+    <div class="ir-field"><span class="ir-lbl">Talent</span>
+      <select id="ip-talent" style="flex:1"><option value="">Wählen</option>${TALENTS.map(t=>`<option value="${t.name}" ${t.name===talent?'selected':''}>${t.name}</option>`).join('')}</select>
+    </div>
+    <div class="ir-field"><span class="ir-lbl">Deal-Typ</span>
+      <select id="ip-type" style="flex:1"><option ${dtype==='Paid'?'selected':''}>Paid</option><option ${dtype==='Gifting'?'selected':''}>Gifting</option><option ${dtype==='Barter'?'selected':''}>Barter</option><option ${dtype==='Event'?'selected':''}>Event</option></select>
+    </div>
+    <div class="ir-field"><span class="ir-lbl">Budget (€ netto)</span><input type="number" id="ip-amount" value="${amount}" style="flex:1"></div>
+    <div class="ir-field"><span class="ir-lbl">Deliverables</span><input id="ip-deliverables" value="${deliverables}" style="flex:1"></div>
+    <div class="ir-field"><span class="ir-lbl">Deadline</span><input id="ip-deadline" value="${deadline}" style="flex:1"></div>
+    <div class="ir-field"><span class="ir-lbl">Ansprechpartner</span><input id="ip-contact" value="${contact}" style="flex:1"></div>
+  `;
+  updateDraft();
+}
+
+function updateDraft(){
+  const lang = document.getElementById('draft-lang').value;
+  const type = document.getElementById('draft-type').value;
+  const brand = document.getElementById('ip-brand')?.value || '';
+  const talent = document.getElementById('ip-talent')?.value || '[Talent]';
+  const amount = document.getElementById('ip-amount')?.value || '';
+  const deliverables = document.getElementById('ip-deliverables')?.value || '';
+  const t = TALENTS.find(x=>x.name===talent)||{};
+  const agencyFee = amount ? Math.round(amount * 0.25) : 0;
+  const total = amount ? (+amount + agencyFee) : 0;
+
+  const drafts = {
+    de: {
+      interest: `Hey [Name],\n\nvielen Dank für deine Anfrage!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von ${talent} für alle Anfragen zuständig. Ich freue mich sehr, ab hier mit dir in den Austausch zu gehen.\n\n${brand ? `Die Anfrage von ${brand} klingt spannend` : 'Das klingt nach einer spannenden Möglichkeit'} und wir wären grundsätzlich interessiert. Um die Details besprechen zu können, hätte ich noch ein paar Fragen:\n\n• Welche konkreten Content Pieces sind geplant?\n• Welcher Zeitraum / welches Posting-Datum ist angedacht?\n• Gibt es Exklusivitäts-Anforderungen?\n• Was ist das vorgesehene Budget?\n\nIch freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`,
+      offer: `Hey [Name],\n\nvielen Dank für deine Anfrage und dein Interesse an einer Zusammenarbeit mit ${talent}!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von ${talent} für alle Anfragen zuständig. Gerne unterbreite ich dir folgendes Angebot:\n\n${deliverables ? deliverables.split(',').map(d=>`• ${d.trim()}`).join('\n') : '• Deliverables nach Absprache'}${amount ? `\n• 25% Agency Fee\n___________\n• GESAMT: €${(+amount + Math.round(+amount*0.25)).toLocaleString('de')} netto` : ''}\n\nBitte lass mich wissen, ob das in eurem Rahmen liegt. Ich freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`,
+      counter: `Hey [Name],\n\nvielen Dank für dein Feedback!\n\nNach Rücksprache mit ${talent} möchte ich dir folgendes Gegenangebot unterbreiten:\n\n${deliverables ? deliverables.split(',').map(d=>`• ${d.trim()}`).join('\n') : '• Deliverables nach Absprache'}${amount ? `\n• 25% Agency Fee\n___________\n• GESAMT: €${total.toLocaleString('de')} netto` : ''}\n\nIch bin zuversichtlich, dass wir zu einer guten Lösung kommen. Was denkst du?\n\nIch sende dir beste Grüße\nMarcel-Dejan`,
+      decline: `Hey [Name],\n\nvielen Dank für deine Anfrage und dein Interesse an ${talent}.\n\nNach sorgfältiger Prüfung müssen wir diese Kooperation leider ablehnen, da sie zum jetzigen Zeitpunkt nicht zu unserem Talent-Profil passt.\n\nWir würden uns freuen, zukünftig wieder in Kontakt zu kommen. Bitte hab Verständnis für unsere Entscheidung.\n\nIch sende dir beste Grüße\nMarcel-Dejan`,
+    },
+    en: {
+      interest: `Hey [Name],\n\nthank you very much for your message!\n\nMy name is Marcel-Dejan and I manage all partnerships and inquiries on behalf of ${talent}. I'm happy to connect with you from here.\n\n${brand ? `The inquiry from ${brand} sounds interesting` : 'This sounds like an exciting opportunity'} and we'd be open to exploring it. Could you please share a few more details?\n\n• Which specific content pieces are you looking for?\n• What's the planned posting date / timeframe?\n• Are there any exclusivity requirements?\n• What is the available budget?\n\nLooking forward to your reply!\n\nBest regards,\nMarcel-Dejan`,
+      offer: `Hey [Name],\n\nthank you very much for your interest in collaborating with ${talent}!\n\nMy name is Marcel-Dejan and I manage all partnerships on ${talent}'s behalf. I'd be happy to present the following offer:\n\n${deliverables ? deliverables.split(',').map(d=>`• ${d.trim()}`).join('\n') : '• Deliverables to be defined'}${amount ? `\n• 25% agency fee\n___________\n• TOTAL: €${total.toLocaleString('de')} net` : ''}\n\nPlease let me know if this works for you. Looking forward to your thoughts!\n\nBest regards,\nMarcel-Dejan`,
+      counter: `Hey [Name],\n\nthank you for your feedback!\n\nAfter discussing with ${talent}, I'd like to propose the following counter-offer:\n\n${deliverables ? deliverables.split(',').map(d=>`• ${d.trim()}`).join('\n') : '• Deliverables to be defined'}${amount ? `\n• 25% agency fee\n___________\n• TOTAL: €${total.toLocaleString('de')} net` : ''}\n\nI'm confident we can find a great solution. What do you think?\n\nBest regards,\nMarcel-Dejan`,
+      decline: `Hey [Name],\n\nthank you very much for reaching out and your interest in ${talent}.\n\nAfter careful consideration, we have decided to pass on this collaboration as it doesn't align with our current focus.\n\nWe hope to connect again in the future. Thank you for your understanding.\n\nBest regards,\nMarcel-Dejan`,
+    }
+  };
+  document.getElementById('draft-output').textContent = drafts[lang][type] || '';
+}
+
+function copyDraft(){
+  navigator.clipboard.writeText(document.getElementById('draft-output').textContent);
+  const btn = event.target; btn.textContent='Kopiert!'; setTimeout(()=>btn.textContent='Kopieren',2000);
+}
+
+function saveDealFromIntake(){
+  const deal = {
+    id: 'deal_'+Date.now(),
+    brand: document.getElementById('ip-brand')?.value||'',
+    talent: document.getElementById('ip-talent')?.value||'',
+    type: document.getElementById('ip-type')?.value||'Paid',
+    amount: document.getElementById('ip-amount')?.value||0,
+    stage: 'inbox',
+    deadline: document.getElementById('ip-deadline')?.value||'',
+    deliverables: document.getElementById('ip-deliverables')?.value||'',
+    contact: document.getElementById('ip-contact')?.value||'',
+    email: '',
+    notes: 'Über Intake Parser erstellt',
+    terms: {usage:false,excl:false,payment:false,werbung:false,brief:false},
+    created: Date.now(), updated: Date.now()
+  };
+  deals.push(deal); save();
+  const btn = event.target; btn.textContent='✓ Gespeichert!'; btn.style.background='#1a3a2a'; btn.style.color='#4ade80';
+}
+
+// ============================================================
+// KANBAN
+// ============================================================
+function renderKanban(){
+  const el = document.getElementById('kanban');
+  el.innerHTML = STAGES.map(s=>{
+    const stageDeal = deals.filter(d=>d.stage===s.id);
+    return `<div class="k-col">
+      <div class="k-head"><span class="k-title" style="color:${s.color}">${s.label}</span><span class="k-count">${stageDeal.length}</span></div>
+      <div class="k-body" id="k-${s.id}">
+        ${stageDeal.map(d=>dealCard(d)).join('')}
+        <div style="padding:6px 0"><button class="btn btn-secondary btn-sm" style="width:100%;font-size:11px" onclick="openDealModal(null,'${s.id}')">+ Deal</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function dealCard(d){
+  const now = Date.now();
+  const isStale = ['inbox','negotiating'].includes(d.stage) && (now-(d.updated||d.created))>3*86400000;
+  const t = TALENTS.find(x=>x.name===d.talent)||{color:'#666'};
+  const days = isStale ? Math.floor((now-(d.updated||d.created))/86400000) : 0;
+  return `<div class="deal-card${isStale?' stale':''}" onclick="openDealModal('${d.id}')">
+    <div class="dc-brand">${d.brand}</div>
+    <div class="dc-talent" style="color:${t.color}">${d.talent||'–'} · <span style="color:#666">${d.type||''}</span></div>
+    <div class="dc-meta">
+      <span>${d.deliverables||'–'}</span>
+      <span class="dc-amount">${d.amount>0?'€'+Number(d.amount).toLocaleString('de'):''}</span>
+    </div>
+    ${d.deadline?`<div style="font-size:10px;color:#666;margin-top:4px">📅 ${d.deadline}</div>`:''}
+    ${isStale?`<div class="stale-flag">⏰ ${days} Tage ohne Reaktion — Follow-up?</div>`:''}
+  </div>`;
+}
+
+// ============================================================
+// DEAL MODAL
+// ============================================================
+function openDealModal(id, defaultStage){
+  editingDealId = id||null;
+  const d = id ? deals.find(x=>x.id===id) : null;
+  document.getElementById('deal-modal-title').textContent = d ? 'Deal bearbeiten' : 'Neuer Deal';
+  document.getElementById('delete-deal-btn').style.display = d ? 'inline-flex' : 'none';
+  document.getElementById('dm-brand').value = d?.brand||'';
+  document.getElementById('dm-talent').value = d?.talent||'';
+  document.getElementById('dm-type').value = d?.type||'Paid';
+  document.getElementById('dm-amount').value = d?.amount||'';
+  document.getElementById('dm-stage').value = d?.stage||(defaultStage||'inbox');
+  document.getElementById('dm-deadline').value = d?.deadline||'';
+  document.getElementById('dm-deliverables').value = d?.deliverables||'';
+  document.getElementById('dm-contact').value = d?.contact||'';
+  document.getElementById('dm-email').value = d?.email||'';
+  document.getElementById('dm-notes').value = d?.notes||'';
+  document.getElementById('ck-usage').checked = d?.terms?.usage||false;
+  document.getElementById('ck-excl').checked = d?.terms?.excl||false;
+  document.getElementById('ck-payment').checked = d?.terms?.payment||false;
+  document.getElementById('ck-werbung').checked = d?.terms?.werbung||false;
+  document.getElementById('ck-brief').checked = d?.terms?.brief||false;
+  document.getElementById('deal-modal').classList.add('open');
+}
+function closeDealModal(){document.getElementById('deal-modal').classList.remove('open');}
+function saveDeal(){
+  const d = {
+    id: editingDealId||('deal_'+Date.now()),
+    brand: document.getElementById('dm-brand').value.trim(),
+    talent: document.getElementById('dm-talent').value,
+    type: document.getElementById('dm-type').value,
+    amount: document.getElementById('dm-amount').value,
+    stage: document.getElementById('dm-stage').value,
+    deadline: document.getElementById('dm-deadline').value,
+    deliverables: document.getElementById('dm-deliverables').value,
+    contact: document.getElementById('dm-contact').value,
+    email: document.getElementById('dm-email').value,
+    notes: document.getElementById('dm-notes').value,
+    terms: {
+      usage: document.getElementById('ck-usage').checked,
+      excl: document.getElementById('ck-excl').checked,
+      payment: document.getElementById('ck-payment').checked,
+      werbung: document.getElementById('ck-werbung').checked,
+      brief: document.getElementById('ck-brief').checked,
+    },
+    created: editingDealId ? (deals.find(x=>x.id===editingDealId)?.created||Date.now()) : Date.now(),
+    updated: Date.now()
+  };
+  if(!d.brand){alert('Bitte Marke eingeben.');return;}
+  if(editingDealId) deals = deals.map(x=>x.id===editingDealId?d:x);
+  else deals.push(d);
+  save(); closeDealModal(); renderKanban();
+}
+function deleteDeal(){
+  if(!confirm('Deal wirklich löschen?')) return;
+  deals = deals.filter(x=>x.id!==editingDealId);
+  save(); closeDealModal(); renderKanban();
+}
+
+// ============================================================
+// ROSTER
+// ============================================================
+function renderRoster(){
+  document.getElementById('roster-grid').innerHTML = TALENTS.map(t=>`
+    <div class="talent-card">
+      <div class="tc-header" style="background:linear-gradient(135deg,${t.color}33,${t.color}11)">
+        <div style="font-size:10px;color:${t.color};font-weight:600;letter-spacing:.5px">${t.niche}</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-handle">${t.handle}${t.tt?` · ${t.tt}`:''}</div>
+        <div class="tc-stats">
+          <div class="tc-stat"><div class="val">${fmtNum(t.ig)}</div><div class="lbl">IG</div></div>
+          ${t.tt_f?`<div class="tc-stat"><div class="val">${fmtNum(t.tt_f)}</div><div class="lbl">TikTok</div></div>`:''}
+          ${t.city?`<div class="tc-stat"><div class="val">${t.city}</div><div class="lbl">Stadt</div></div>`:''}
+        </div>
+        <div style="font-size:11px;color:#818cf8;margin-bottom:8px">✉ <a href="mailto:${t.email}" style="color:#818cf8">${t.email}</a></div>
+        <div class="tc-rates">
+          <div style="font-size:11px;font-weight:600;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Rate Card</div>
+          ${t.rates.map(r=>`<div class="tc-rate-row">
+            <span class="rname">${r.n}</span>
+            <span>${typeof r.price==='number'?`<span class="rprice">€${r.price.toLocaleString('de')}</span>${r.floor?`<span class="rfloor"> (min €${r.floor.toLocaleString('de')})</span>`:''}`:
+            `<span class="rprice">${r.price}</span>`}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function fmtNum(n){if(!n)return'–';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(0)+'k';return n;}
+
+// ============================================================
+// PORTFOLIO
+// ============================================================
+function initPFSelector(){
+  const el = document.getElementById('pf-talent-selector');
+  el.innerHTML = TALENTS.map(t=>`
+    <div onclick="togglePF('${t.id}',this)" style="padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid ${t.color};background:${selectedPFTalents.has(t.id)?t.color+'33':'transparent'};color:${selectedPFTalents.has(t.id)?'#fff':'#888'};transition:all .15s">${t.name}</div>
+  `).join('');
+}
+function togglePF(id, el){
+  if(selectedPFTalents.has(id)){selectedPFTalents.delete(id); const t=TALENTS.find(x=>x.id===id); el.style.background='transparent';el.style.color='#888';}
+  else{selectedPFTalents.add(id); const t=TALENTS.find(x=>x.id===id); el.style.background=t.color+'33';el.style.color='#fff';}
+}
+function generatePortfolio(){
+  const selected = TALENTS.filter(t=>selectedPFTalents.has(t.id));
+  const note = document.getElementById('pf-note').value;
+  const brand = document.getElementById('pf-brand').value;
+  let html = `<div style="margin-bottom:20px"><div style="font-size:18px;font-weight:700;color:#fff">ONEMGMNT</div>
+    <div style="font-size:13px;color:#888;margin-top:4px">Talent & Brand Partnerships${brand?` · für ${brand}`:''}</div>
+    ${note?`<div style="font-size:12px;color:#aaa;margin-top:8px;font-style:italic">${note}</div>`:''}
+    <div style="font-size:11px;color:#555;margin-top:8px">${new Date().toLocaleDateString('de')} · info@onemgmnt.com</div>
+  </div>`;
+  selected.forEach(t=>{
+    html += `<div style="background:#111115;border:1px solid #222;border-radius:10px;overflow:hidden;margin-bottom:16px">
+      <div style="background:linear-gradient(135deg,${t.color}44,${t.color}11);padding:16px">
+        <div style="font-size:16px;font-weight:700;color:#fff">${t.name}</div>
+        <div style="font-size:12px;color:${t.color};margin-top:2px">${t.niche}</div>
+        <div style="display:flex;gap:16px;margin-top:10px">
+          <div><div style="font-size:16px;font-weight:700;color:#fff">${fmtNum(t.ig)}</div><div style="font-size:10px;color:#888">Instagram</div></div>
+          ${t.tt_f?`<div><div style="font-size:16px;font-weight:700;color:#fff">${fmtNum(t.tt_f)}</div><div style="font-size:10px;color:#888">TikTok</div></div>`:''}
+        </div>
+      </div>
+      <div style="padding:14px">
+        ${t.handle} ${t.tt?`· ${t.tt}`:''} ${t.city?`· ${t.city}`:''}
+        <div style="margin-top:10px;font-size:12px;color:#818cf8">✉ ${t.email}</div>
+        <div style="background:#0d0d0f;border-radius:7px;padding:10px;margin-top:10px">
+          <div style="font-size:10px;color:#666;margin-bottom:6px">RATES</div>
+          ${t.rates.slice(0,3).map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #1a1a22">
+            <span style="color:#aaa">${r.n}</span>
+            <span style="color:#4ade80;font-weight:600">${typeof r.price==='number'?'€'+r.price.toLocaleString('de'):r.price}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('pf-preview').innerHTML = html;
+}
+function exportPortfolioPDF(){
+  window.print();
+}
+
+// ============================================================
+// BRANDS
+// ============================================================
+const STATUS_COLORS = {prospect:'#888',contacted:'#818cf8',active:'#4ade80',done:'#60a5fa',pass:'#f87171'};
+const STATUS_LABELS = {prospect:'Prospect',contacted:'Kontaktiert',active:'Aktiv',done:'Deal gemacht',pass:'Kein Interesse'};
+
+function renderBrands(){
+  const q = document.getElementById('brand-search').value.toLowerCase();
+  const cat = document.getElementById('brand-filter').value;
+  const filtered = brands.filter(b=>{
+    const matchQ = !q || b.name.toLowerCase().includes(q) || (b.contact||'').toLowerCase().includes(q) || (b.talents||'').toLowerCase().includes(q);
+    const matchCat = !cat || b.cat===cat;
+    return matchQ && matchCat;
+  });
+  document.getElementById('brand-list').innerHTML = filtered.length ?
+    filtered.map(b=>`<div class="brand-row">
+      <div class="br-name">${b.name}</div>
+      <div class="br-cat"><span class="pill">${b.cat||'–'}</span></div>
+      <div class="br-contact">${b.contact||'–'}<br><span style="color:#555;font-size:10px">${b.email||''}</span></div>
+      <div style="font-size:12px;color:#aaa;flex:1">${b.talents||'–'}</div>
+      <div style="font-size:11px;color:#aaa;flex:1">${b.budget||'–'}</div>
+      <div class="br-status"><span class="badge" style="background:${STATUS_COLORS[b.status]||'#888'}22;color:${STATUS_COLORS[b.status]||'#888'}">${STATUS_LABELS[b.status]||b.status}</span></div>
+      <button class="btn btn-secondary btn-sm" onclick="openBrandModal('${b.id}')">✎</button>
+    </div>`).join('') :
+    '<div class="text-muted text-sm">Keine Brands gefunden.</div>';
+}
+
+function openBrandModal(id){
+  editingBrandId = id||null;
+  const b = id ? brands.find(x=>x.id===id) : null;
+  document.getElementById('bm-name').value=b?.name||'';
+  document.getElementById('bm-cat').value=b?.cat||'Fashion';
+  document.getElementById('bm-contact').value=b?.contact||'';
+  document.getElementById('bm-email').value=b?.email||'';
+  document.getElementById('bm-talents').value=b?.talents||'';
+  document.getElementById('bm-budget').value=b?.budget||'';
+  document.getElementById('bm-status').value=b?.status||'prospect';
+  document.getElementById('bm-notes').value=b?.notes||'';
+  document.getElementById('brand-modal').classList.add('open');
+}
+function closeBrandModal(){document.getElementById('brand-modal').classList.remove('open');}
+function saveBrand(){
+  const b={id:editingBrandId||('b'+Date.now()),name:document.getElementById('bm-name').value.trim(),cat:document.getElementById('bm-cat').value,contact:document.getElementById('bm-contact').value,email:document.getElementById('bm-email').value,talents:document.getElementById('bm-talents').value,budget:document.getElementById('bm-budget').value,status:document.getElementById('bm-status').value,notes:document.getElementById('bm-notes').value};
+  if(!b.name){alert('Bitte Brand-Name eingeben.');return;}
+  if(editingBrandId) brands=brands.map(x=>x.id===editingBrandId?b:x);
+  else brands.push(b);
+  save(); closeBrandModal(); renderBrands();
+}
+
+// ============================================================
+// TEMPLATES
+// ============================================================
+const TEMPLATES = {
+  paid:{
+    de:[
+      {name:'Angebot senden', text:`Hey [Name],\n\nvielen Dank für deine Anfrage und dein Interesse an einer Zusammenarbeit mit [Talent]!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von [Talent] für alle Anfragen zuständig. Ich freue mich sehr, ab hier mit dir in den Austausch zu gehen.\n\nFür die Aktivierung würden wir gerne folgendes anbieten:\n\n• [Deliverable 1] = €[Preis]\n• [Deliverable 2] = €[Preis]\n• 25% Agency Fee\n___________\n• GESAMT: €[Total] netto\n\nBitte lass mich wissen, ob das in eurem Rahmen liegt. Ich freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Interesse anfragen', text:`Hey [Name],\n\nvielen Dank für deine Anfrage!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von [Talent] für alle Anfragen zuständig. Das klingt nach einer spannenden Möglichkeit und wir wären grundsätzlich interessiert.\n\nUm die Details besprechen zu können:\n• Welche Content Pieces sind geplant?\n• Was ist der angedachte Zeitraum?\n• Gibt es Exklusivitäts-Anforderungen?\n• Was ist das Budget?\n\nIch freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Verhandlung / Gegenangebot', text:`Hey [Name],\n\nvielen Dank für dein Feedback!\n\nNach Rücksprache mit [Talent] möchte ich dir folgendes Gegenangebot unterbreiten:\n\n• [Deliverable 1] = €[Preis]\n• [Deliverable 2] = €[Preis]\n• 25% Agency Fee\n___________\n• GESAMT: €[Total] netto\n\nIch bin zuversichtlich, dass wir zu einer guten Lösung kommen. Was denkst du?\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Absage', text:`Hey [Name],\n\nvielen Dank für deine Anfrage und dein Interesse an [Talent].\n\nNach sorgfältiger Prüfung müssen wir diese Kooperation leider ablehnen, da sie zum jetzigen Zeitpunkt nicht zu unserem Talent-Profil passt.\n\nWir würden uns freuen, zukünftig wieder in Kontakt zu kommen.\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Rechnung ankündigen', text:`Hey [Name],\n\nwir freuen uns, dass die Zusammenarbeit mit [Talent] so gut geklappt hat!\n\nIch werde dir in Kürze die Rechnung zusenden. Bitte bestätige nochmals:\n\n• Rechnungsadresse\n• Zahlungsziel (Net-30?)\n• Bestellnummer / PO-Nummer falls nötig\n\nVielen Dank und ich sende dir beste Grüße\nMarcel-Dejan`},
+    ],
+    en:[
+      {name:'Send offer', text:`Hey [Name],\n\nthank you very much for your interest in collaborating with [Talent]!\n\nMy name is Marcel-Dejan and I manage all partnerships and inquiries on [Talent]'s behalf. I'm very happy to connect with you from here.\n\nFor the activation, we'd be happy to offer the following:\n\n• [Deliverable 1] = €[Price]\n• [Deliverable 2] = €[Price]\n• 25% agency fee\n___________\n• TOTAL: €[Total] net\n\nPlease let me know if this works within your budget. Looking forward to your reply!\n\nBest regards,\nMarcel-Dejan`},
+      {name:'Request details', text:`Hey [Name],\n\nthank you for reaching out!\n\nMy name is Marcel-Dejan and I manage all partnerships on behalf of [Talent]. This sounds like an exciting opportunity and we'd be open to exploring it further.\n\nCould you share a few more details?\n• Which content pieces are planned?\n• What's the proposed timeline?\n• Are there any exclusivity requirements?\n• What is the budget?\n\nLooking forward to your reply!\n\nBest regards,\nMarcel-Dejan`},
+      {name:'Counter offer', text:`Hey [Name],\n\nthank you for your feedback!\n\nAfter discussing with [Talent], I'd like to propose the following counter-offer:\n\n• [Deliverable 1] = €[Price]\n• [Deliverable 2] = €[Price]\n• 25% agency fee\n___________\n• TOTAL: €[Total] net\n\nI'm confident we can find a great solution. What do you think?\n\nBest regards,\nMarcel-Dejan`},
+      {name:'Decline', text:`Hey [Name],\n\nthank you very much for reaching out and your interest in [Talent].\n\nAfter careful consideration, we have decided to pass on this collaboration as it doesn't currently align with our talent's focus.\n\nWe hope to connect again in the future. Thank you for your understanding.\n\nBest regards,\nMarcel-Dejan`},
+    ]
+  },
+  gifting:{
+    de:[
+      {name:'Gifting annehmen', text:`Hey [Name],\n\nvielen Dank für deine Anfrage!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von [Talent] für alle Anfragen zuständig. Das klingt interessant – wir würden das Gifting gerne annehmen.\n\nBitte sende uns:\n• Produkt-Auswahl / Katalog\n• Lieferadresse: [Talent-Adresse]\n• Gewünschte Posting-Zeitraum\n\nIch freue mich auf die Zusammenarbeit!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Gifting ablehnen', text:`Hey [Name],\n\nvielen Dank für deine Anfrage.\n\nLeider ist [Talent] aktuell sehr ausgelastet und nimmt derzeit keine Gifting-Kooperationen an. Wir würden uns freuen, zukünftig über eine bezahlte Zusammenarbeit zu sprechen.\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Gifting → Paid upgraden', text:`Hey [Name],\n\nvielen Dank für die Anfrage!\n\n[Talent] bekommt sehr viele Gifting-Anfragen und ist aktuell ausgebucht. Allerdings hätten wir die Möglichkeit, eine bezahlte Kooperation zu realisieren:\n\n• [Deliverable] = €[Preis]\n• 25% Agency Fee\n___________\n• GESAMT: €[Total] netto\n\nHat das in eurem Budget Platz?\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+    ],
+    en:[
+      {name:'Accept gifting', text:`Hey [Name],\n\nthank you for your message!\n\nMy name is Marcel-Dejan, I manage all partnerships on behalf of [Talent]. This sounds great – we'd be happy to accept the gifting.\n\nCould you please send:\n• Product selection / catalogue\n• Delivery address: [Talent's address]\n• Preferred posting timeframe\n\nLooking forward to it!\n\nBest regards,\nMarcel-Dejan`},
+      {name:'Decline gifting', text:`Hey [Name],\n\nthank you for reaching out.\n\nUnfortunately [Talent] is currently fully booked and not accepting gifting collaborations at this time. We'd love to discuss a paid partnership in the future!\n\nBest regards,\nMarcel-Dejan`},
+    ]
+  },
+  barter:{
+    de:[
+      {name:'Barter annehmen', text:`Hey [Name],\n\nvielen Dank für die Anfrage!\n\nEin Barter-Deal klingt interessant. [Talent] würde bei einer Kooperation folgendes liefern:\n\n• [Content 1]\n• [Content 2]\n\nIm Gegenzug würden wir uns folgendes wünschen:\n• [Produkt/Dienstleistung, Wert ca. €500+]\n\nKlingt das umsetzbar?\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Barter Gegenangebot', text:`Hey [Name],\n\nvielen Dank für deinen Vorschlag!\n\nWir haben das intern besprochen. Ein Barter-Deal wäre für uns denkbar, allerdings möchten wir folgendes anpassen:\n\nContent: [Deliverable]\nGegenwert: Produkte/Dienstleistungen im Wert von mindestens €[Wert]\n\nKannst du das so realisieren?\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+    ],
+    en:[
+      {name:'Accept barter', text:`Hey [Name],\n\nthank you for the inquiry!\n\nA barter deal sounds interesting. [Talent] would deliver:\n\n• [Content 1]\n• [Content 2]\n\nIn return, we'd love:\n• [Product/service, value approx. €500+]\n\nDoes that work for you?\n\nBest regards,\nMarcel-Dejan`},
+    ]
+  },
+  event:{
+    de:[
+      {name:'Event zusagen', text:`Hey [Name],\n\nvielen Dank für die Einladung zum Event!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von [Talent] für alle Anfragen zuständig. Das Event klingt nach einer spannenden Möglichkeit und wir wären sehr interessiert, dabei zu sein.\n\nBitte lass mich wissen, welche weiteren Infos du von uns benötigst.\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Event-Fee anfragen', text:`Hey [Name],\n\nvielen Dank für die Einladung!\n\nMein Name ist Marcel-Dejan und ich bin als Manager von [Talent] für alle Anfragen zuständig. Das Event klingt interessant.\n\nFür Event-Teilnahmen berechnen wir eine Appearance-Fee. Bitte teile mir mit, ob das in eurem Rahmen liegt:\n\n• Appearance-Fee: €[Preis]\n\nIch freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+      {name:'Event Details anfragen', text:`Hey [Name],\n\nvielen Dank für die Einladung!\n\nUm das intern abstimmen zu können, hätte ich noch ein paar Fragen:\n• Datum und Uhrzeit?\n• Ort / Location?\n• Wie lange wird die Anwesenheit erwartet?\n• Dress Code?\n• Content-Pflicht (Posting vor Ort)?\n• Wird ein Fahrt-/Hotelkostenersatz gewährt?\n\nIch freue mich auf deine Rückmeldung!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+    ],
+    en:[
+      {name:'Accept event', text:`Hey [Name],\n\nthank you very much for the invitation!\n\nMy name is Marcel-Dejan and I manage all inquiries on behalf of [Talent]. This sounds like a great opportunity and we would be very happy to attend.\n\nPlease let me know what further information you need from our side.\n\nBest regards,\nMarcel-Dejan`},
+      {name:'Request event fee', text:`Hey [Name],\n\nthank you for the invitation!\n\nMy name is Marcel-Dejan, I manage all partnerships on behalf of [Talent]. The event sounds very interesting.\n\nFor event appearances, we charge an appearance fee:\n\n• Appearance fee: €[Price]\n\nPlease let me know if this works within your budget.\n\nBest regards,\nMarcel-Dejan`},
+    ]
+  },
+  outreach:{
+    de:[
+      {name:'Cold Outreach', text:`Hey [Name],\n\nmein Name ist Marcel-Dejan, ich bin Talent Manager bei ONEMGMNT und betreue unter anderem [Talent].\n\nIch wende mich an dich, weil ich glaube, dass [Talent] perfekt zu [Marke] passt:\n\n• [Grund 1: Übereinstimmende Zielgruppe]\n• [Grund 2: Ästhetik / Markenwerte]\n• [Grund 3: bisherige Erfolge]\n\n[Talent] hat [X] Follower auf Instagram und [X] auf TikTok, überwiegend [Zielgruppe].\n\nIch würde mich freuen, euch mehr zu erzählen. Darf ich ein Media Kit zusenden?\n\nIch sende dir beste Grüße\nMarcel-Dejan\nONEMGMNT · info@onemgmnt.com`},
+      {name:'Talent pitchen', text:`Hey [Name],\n\nich bin Marcel-Dejan, Talent Manager bei ONEMGMNT.\n\nIch schreibe euch, weil ich denke, dass [Talent] eine starke Ergänzung für eure Kampagnen sein könnte. Aktuell [Follower-Info], [Nische], [Besonderheit].\n\nIch habe ein kurzes Media Kit beigefügt. Habt ihr aktuell offene Kooperationen oder Kampagnen, für die das passt?\n\nIch freue mich auf euer Feedback!\n\nIch sende dir beste Grüße\nMarcel-Dejan`},
+    ],
+    en:[
+      {name:'Cold Outreach', text:`Hey [Name],\n\nmy name is Marcel-Dejan, I'm a talent manager at ONEMGMNT representing [Talent], among others.\n\nI'm reaching out because I believe [Talent] would be a great fit for [Brand]:\n\n• [Reason 1: Matching audience]\n• [Reason 2: Aesthetic / brand values]\n• [Reason 3: Past achievements]\n\n[Talent] has [X] followers on Instagram and [X] on TikTok, primarily [target audience].\n\nI'd love to tell you more — may I send over a media kit?\n\nBest regards,\nMarcel-Dejan\nONEMGMNT · info@onemgmnt.com`},
+      {name:'Follow-up', text:`Hey [Name],\n\nI wanted to follow up on my message from last week regarding a potential collaboration with [Talent].\n\nIn case it got lost in your inbox — I'd love to connect and explore if there's a fit. Happy to send a media kit or jump on a quick call.\n\nBest regards,\nMarcel-Dejan`},
+    ]
+  }
+};
+
+function renderTmplList(){
+  const cat = document.getElementById('tmpl-cat').value;
+  const lang = document.getElementById('tmpl-lang').value;
+  const list = TEMPLATES[cat]?.[lang]||[];
+  document.getElementById('tmpl-list').innerHTML = list.map((t,i)=>`
+    <div class="tmpl-item${currentTmpl===cat+'_'+lang+'_'+i?' active':''}" onclick="selectTmpl('${cat}','${lang}',${i},this)">${t.name}</div>
+  `).join('');
+  if(list.length) selectTmpl(cat, lang, 0, document.querySelector('.tmpl-item'));
+}
+
+function selectTmpl(cat, lang, i, el){
+  document.querySelectorAll('.tmpl-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  currentTmpl = TEMPLATES[cat]?.[lang]?.[i];
+  document.getElementById('tmpl-preview').textContent = currentTmpl?.text||'';
+}
+
+function personalizeTemplate(){
+  if(!currentTmpl) return;
+  const talent = document.getElementById('tmpl-talent').value;
+  const brand = document.getElementById('tmpl-brand-name').value;
+  const contact = document.getElementById('tmpl-contact').value;
+  let txt = currentTmpl.text;
+  if(talent) txt = txt.replaceAll('[Talent]', talent);
+  if(brand) txt = txt.replaceAll('[Marke]', brand).replaceAll('[Brand]', brand);
+  if(contact) txt = txt.replaceAll('[Name]', contact);
+  // Add rates if talent known
+  const t = TALENTS.find(x=>x.name===talent);
+  if(t && txt.includes('[Preis]')){
+    const reel = t.rates.find(r=>r.n.includes('Reel'));
+    const story = t.rates.find(r=>r.n.includes('Story'));
+    if(reel) txt = txt.replace('[Preis]', reel.price.toLocaleString('de'));
+    if(story && txt.includes('[Preis]')) txt = txt.replace('[Preis]', story.price.toLocaleString('de'));
+  }
+  document.getElementById('tmpl-preview').textContent = txt;
+}
+
+function copyTemplate(){
+  const txt = document.getElementById('tmpl-preview').textContent;
+  navigator.clipboard.writeText(txt);
+  const btn = event.target; btn.textContent='Kopiert!'; setTimeout(()=>btn.textContent='Kopieren',2000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function(){
+  load();
+  renderOverview();
+  renderTmplList();
+};
+</script>
+</body>
+</html>
